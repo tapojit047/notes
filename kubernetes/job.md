@@ -8,5 +8,30 @@ one-off tasks. The Job object is made for handling these types of tasks.
 - The Job object is responsible for creating and managing Pods defined in a template in
 the job specification. These Pods generally run until successful completion.
 
+
+# CronJobs:
+- Sometimes you want to schedule a job to be run at a certain interval. To achieve this,
+you can declare a CronJob in Kubernetes, which is responsible for creating a new Job
+object at a particular interval.
+
+*Manifest File*
+```yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: example-cron
+spec:
+  # Run every fifth hour
+  schedule: "0 */5 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: batch-job
+              image: my-batch-image
+          restartPolicy: OnFailure
+```
+
 Links: https://github.com/ishtiaqhimel/notes/blob/master/kubernetes/jobs.md
 https://www.youtube.com/watch?v=j1EnBbxSz64&list=PLMPZQTftRCS8Pp4wiiUruly5ODScvAwcQ&index=36
