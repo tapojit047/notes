@@ -1,8 +1,7 @@
-links:
-
-netfilter: https://www.digitalocean.com/community/tutorials/a-deep-dive-into-iptables-and-netfilter-architecture
-
 ## Chapter 2:
+**netfilter**: 
+- https://www.digitalocean.com/community/tutorials/a-deep-dive-into-iptables-and-netfilter-architecture
+
 **IPVS**: 
 - IPVS (IP Virtual Server) is a load balancing solution for Linux systems that allows a network administrator to distribute network traffic across multiple servers. It can be used to balance load on web servers, FTP servers, or other types of servers that handle network traffic. IPVS operates at the Layer 4 of the OSI model, which means it can direct traffic based on the IP address and port number of incoming packets. It can be used in conjunction with other Linux tools, such as iptables, to provide a complete load balancing solution.
 
