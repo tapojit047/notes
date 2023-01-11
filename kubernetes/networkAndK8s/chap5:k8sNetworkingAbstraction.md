@@ -7,7 +7,7 @@
 ## Services:
 - An abstract way to expose an application running on a set of Pods as a network service.
 
-<!--- ![alt text](/home/notes/kubernetes/images/service1.png) -->
+![alt text](https://github.com/tapojit047/notes/blob/master/kubernetes/images/service1.png)
 
 
 4 types:
