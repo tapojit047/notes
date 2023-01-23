@@ -1,0 +1,15 @@
+{{- define "mychart.labels" }}
+  labels:
+    generator: helm
+    date: {{ now | htmlDate}}
+    {{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-configmap
+data:
+  myvalue: "Hello World"
+  {{- template  "mychart.labels"}}
+  drink: {{.Values.favorite.drink | default "tea" | quote }}
+  food: {{.Values.favorite.food | repeat 4 | upper | quote}}
+  mug: {{ if eq .Values.favorite.drink "coffee" }} "true" {{ else }} "false" {{ end }}

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deploymentInfo.name }}
+  labels:
+    app: api
+spec:
+  replicas: {{ .Values.deploymentInfo.replicaCount }}
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - name: api
+        image: {{ .Values.serverInfo.name}}/{{.Values.imageInfo.name}}
+        ports:
+        - containerPort: 8000

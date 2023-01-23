@@ -1,0 +1,10 @@
+deploymentInfo:
+  name: api-server
+  replicaCount: 2
+serverInfo:
+  name: tapojit047
+imageInfo:
+  name: api-server
+serviceInfo:
+  name: api-service
+  servicePort: 8000

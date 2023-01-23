@@ -1,0 +1,5 @@
+tapojit:
+  numberOfReplicas: 4
+repoName: tapojit047
+
+development: false
