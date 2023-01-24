@@ -94,7 +94,7 @@ requiring polling requests.
 - A scheme in kubernetes is a set of types, functions and methods that are used to convert between the internal representation of resources and the external representation of resources in the API. It provides the mechanism to encode and decode the resources in a way that can be understood by the cluster and the client.
 - The internal representation is the struct type that is used by the k8s client-go library to represent the resource in the Go code and the external representation is the JSON or YAML representation of the resource that is sent and received over the API.
 
-Add image here
+![alt text](https://github.com/tapojit047/notes/blob/master/kubernetes/images/chap 3.png)
 
 ## Vendoring:
 - Vendoring is the process of including third-party dependencies (also called "vendors") directly in a project's source code repository, rather than relying on them to be installed separately on the system where the project will be built or run.
