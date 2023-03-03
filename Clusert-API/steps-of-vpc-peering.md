@@ -1,0 +1,42 @@
+# Steps of creating a VPC peering connection and pinging one cluster from another:
+- ### Edit AWS Firewall rule:
+  - Edit an AWS firewall rule (also known as a security group rule) to allow access to an EC2 instance from another VPC in the AWS Management Console (only the inbound cluster), you can follow the steps below:
+    - Open the Amazon EC2 console in the AWS Management Console.
+    - In the navigation pane, click "Security Groups" under "Network & Security".
+    - Select the security group that is associated with the EC2 instance you want to access. (In our case, it is the default security group)
+    - Click on the "Inbound Rules" tab.
+    - Click the "Edit inbound rules" button.
+    - Click "Add rule".
+    - Choose the "Custom TCP Rule" from the list of options.
+    - In the "Port range" field, enter the port or range of ports that you want to allow access to (for example, 22 for SSH access).
+    - In the "Source" field, choose "Custom" and enter the IP address range or CIDR block of the VPC that you want to allow access from. For example, if the VPC CIDR block is 10.0.0.0/16, you can enter 10.0.0.0/16 to allow access from all IP addresses in the VPC.
+    - Click "Save rules" button to save the changes.
+  - Note that you can also create a new security group rule specifically for allowing access from the other VPC by clicking the "Add Rule" button and following the same steps. Once the rule is added or edited, you should be able to access the EC2 instance from the specified VPC using the allowed port(s).
+- ### Create VPC Peering:
+    - To create a VPC peering connection between two EKS managed clusters in AWS using the AWS Management Console (UI), you can follow the steps below:
+      - Open the Amazon VPC console in the AWS Management Console. 
+      - In the navigation pane, click "Peering Connections" under "Peering". 
+      - Click the "Create Peering Connection" button. 
+      - Enter a name and description for the peering connection. 
+      - Select the VPC in the local EKS cluster from the "Local VPC owner ID" dropdown list. 
+      - Enter the VPC ID of the peer EKS cluster in the "Peer VPC owner ID" field. 
+      - Select "Use DNS resolution between VPCs" checkbox to enable DNS resolution between the peered VPCs. 
+      - Click "Create Peering Connection" button.
+    - Once you have created the peering connection, you will need to accept the peering request from the peer EKS cluster's VPC console. To do this, follow these steps:
+      - Open the Amazon VPC console in the AWS Management Console of the peer EKS cluster. 
+      - In the navigation pane, click "Peering Connections" under "Peering". 
+      - Locate the pending peering connection request and click "Actions" button. 
+      - Select "Accept Request" option. 
+      - Click "Yes, Accept" button.
+    - After the peering connection is accepted, you can configure the necessary routing and security rules to allow traffic to flow between the peered VPCs. Note that you will also need to configure the Kubernetes network policy to allow traffic between the pods in the peered clusters.
+- ### Edit Route Table:
+  - It is necessary to edit the route table of both the clusters. To edit the route table for an instance in an AWS cluster, you can follow these steps:
+    - Go to EC2 Dashboard and click Instances
+    - Click on the `Instance ID` of the instance you want to choose (Find out the instance where the Pod with the DB is running)
+    - Click on the `Subnet ID` at the centre of the screen
+    - Click on the `Subnet ID` again
+    - Click on the `Route table`
+    - Select the Route table and go to `Routes` at the bottom of the page
+    - Select `Edit Routes`
+    - Select `Add Routes`
+    - Enter the Destination IP and select Target as `Peering Connection` and save changes
