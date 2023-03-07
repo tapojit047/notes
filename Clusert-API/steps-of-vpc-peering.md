@@ -44,3 +44,5 @@
   - To ping the DB Pod from the application cluster follow the following steps:
     - Run this job in the application cluster https://github.com/pkbhowmick/mongodb-client-example-k8s/blob/master/deploy/job.yaml
     - Don't forget to edit the svc-url in the job.yaml
+    - Get the logs of the pod where the job is running
+  - Now you will get "Succssfully pinged ..." 
