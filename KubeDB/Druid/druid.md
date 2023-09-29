@@ -153,19 +153,21 @@
 
 ### Architecture of a simple Druid Cluster:
 - **Master Server**: A Master server to host the Coordinator and Overlord processes.
-  - _Coordinator_: The Coordinator manages the distribution and balancing of data across the cluster. It keeps track of the available historical nodes and assigns segments of data to them. It ensures that data is evenly distributed for efficient querying.
-  - _Overlord_: The Overlord is responsible for task scheduling and management. It handles tasks like data loading, indexing, and other administrative tasks in the cluster.
+  - **_Coordinator_**: The Druid Coordinator process is primarily responsible for segment management and distribution. More specifically, the Druid Coordinator process communicates to Historical processes to load or drop segments based on configurations. The Druid Coordinator is responsible for loading new segments, dropping outdated segments, ensuring that segments are "replicated" (that is, loaded on multiple different Historical nodes) proper (configured) number of times, and moving ("balancing") segments between Historical nodes to keep the latter evenly loaded.
+  - **_Overlord_**: The Overlord process is responsible for accepting tasks, coordinating task distribution, creating locks around tasks, and returning statuses to callers.
 - **Data Servers** (Historical and MiddleManager): Two scalable, fault-tolerant Data servers running Historical and MiddleManager processes.
-  - _Historical_: Historical nodes store and serve historical data segments. These segments are precomputed views of data that can be queried for historical analysis. Historical nodes are often designed to be scalable and fault-tolerant.
-  - _MiddleManager_: The MiddleManager is responsible for data ingestion and indexing. It handles the tasks related to ingesting real-time data streams and indexing them into Druid's storage format, which can then be served by historical nodes.
+  - **_Historical_**: 
+    - Each Historical process copies or "pulls" segment files from Deep Storage to local disk in an area called the segment cache.
+    - The Coordinator controls the assignment of segments to Historicals and the balance of segments between Historicals. Historical processes do not communicate directly with each other, nor do they communicate directly with the Coordinator. Instead, the Coordinator creates ephemeral entries in Zookeeper in a load queue path. Each Historical process maintains a connection to Zookeeper, watching those paths for segment information.
+  - **_MiddleManager_**: The MiddleManager process is a worker process that executes submitted tasks. Middle Managers forward tasks to Peons that run in separate JVMs. The reason we have separate JVMs for tasks is for resource and log isolation. Each Peon is capable of running only one task at a time, however, a MiddleManager may have multiple Peons.
 - **Query Server**: A query server, hosting the Druid Broker and Router processes
-  - _Druid Broker_: The Druid Broker is responsible for handling incoming queries from users and distributing those queries to the appropriate historical nodes and real-time nodes. It optimizes query routing for efficient query processing.
-  - _Router_: The Router is responsible for routing queries to the appropriate components, including the Druid Broker. It helps manage query traffic and ensures high availability and fault tolerance.
+  - _**Broker**_: The Broker is the process to route queries to if you want to run a distributed cluster. It understands the metadata published to ZooKeeper about what segments exist on what processes and routes queries such that they hit the right processes. This process also merges the result sets from all of the individual processes together. On start up, Historical processes announce themselves and the segments they are serving in Zookeeper.
+  - _**Router**_: The Router is responsible for routing queries to the appropriate components, including the Druid Broker. In addition to query routing, the Router also runs the web console, a management UI.
 - **Deep Storage**: "Deep storage" refers to a storage system or repository where the actual data or data segments used for analysis and querying are stored.
 - This architecture is a simplified representation of a Druid cluster suitable for many use cases. Druid clusters can be scaled horizontally by adding more historical nodes or real-time nodes to handle larger data volumes and query loads. Additionally, Druid can be integrated with other tools and services for data ingestion and integration, such as Apache Kafka for real-time data streaming and Apache Hive for SQL query capabilities.
 - In production, we recommend deploying multiple Master servers and multiple Query servers in a fault-tolerant configuration based on your specific fault-tolerance needs.
 
-- **_Historial Vs MiddleManager Vs Deep Storage_**:
+- ** Historical Vs MiddleManager Vs Deep Storage_**:
 - In the context of Apache Druid, Historical and MiddleManager are two different types of server processes that play distinct roles in the system, while deep storage is a storage component that is separate from these processes. Let's explore the differences:
   - Historical:
     - Role: Historical processes in Druid are responsible for serving historical data segments to query processes (like brokers). They are essentially responsible for providing access to historical data for querying and analysis.
@@ -183,5 +185,8 @@
     - Storage Solutions: Deep storage can be implemented using various storage solutions, including cloud-based object storage (e.g., Amazon S3, Azure Blob Storage), distributed file systems (e.g., HDFS), or network-attached storage (e.g., NFS).
     - Data Separation: Deep storage decouples the storage of data from the query and ingestion processes. This separation allows data to be accessed and queried independently of the servers responsible for data ingestion and serving.
   - In summary, Historical and MiddleManager processes in Druid have specific roles related to data storage, retrieval, and data ingestion, while deep storage is a separate storage layer responsible for durable, scalable, and long-term storage of data segments. These components work together to enable Druid to efficiently ingest, store, and serve data for analytical queries.
-  - 
+
+
+### ZooKeeper:
+- ZooKeeper is an open-source, highly reliable, distributed coordination service. It is often used in distributed systems to manage and coordinate various aspects of the system, such as configuration management, distributed synchronization, and naming services. ZooKeeper provides a centralized and consistent way for distributed applications to synchronize and share information in a distributed environment.
 
