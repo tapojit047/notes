@@ -190,3 +190,6 @@
 ### ZooKeeper:
 - ZooKeeper is an open-source, highly reliable, distributed coordination service. It is often used in distributed systems to manage and coordinate various aspects of the system, such as configuration management, distributed synchronization, and naming services. ZooKeeper provides a centralized and consistent way for distributed applications to synchronize and share information in a distributed environment.
 
+## Querying:
+- Supports two types of query:
+  - 
