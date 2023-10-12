@@ -190,6 +190,44 @@
 ### ZooKeeper:
 - ZooKeeper is an open-source, highly reliable, distributed coordination service. It is often used in distributed systems to manage and coordinate various aspects of the system, such as configuration management, distributed synchronization, and naming services. ZooKeeper provides a centralized and consistent way for distributed applications to synchronize and share information in a distributed environment.
 
-## Querying:
-- Supports two types of query:
-  - 
+### druid-kubernetes-extensions:
+- Apache Druid Extension to enable using Kubernetes API Server for node discovery and leader election. This extension allows Druid cluster deployment on Kubernetes without Zookeeper. It allows running multiple Druid clusters within same Kubernetes Cluster, See clusterIdentifier config below.
+- To use this extension please make sure to include `druid-kubernetes-extensions` in the extensions load list.
+- This extension works together with HTTP based segment and task management in Druid. Consequently, following configurations must be set on all Druid nodes / `common.runtime.properties`.
+  - `druid.zk.service.enabled=false` 
+  - `druid.serverview.type=http`
+  - `druid.coordinator.loadqueuepeon.type=http`
+  - `druid.indexer.runner.type=httpRemote`
+  - `druid.discovery.type=k8s`
+- For Node Discovery, Each Druid process running inside a pod "announces" itself by adding few "labels" and "annotations" in the pod spec. Druid process needs to be aware of pod name and namespace which it reads from environment variables `POD_NAME` and `POD_NAMESPACE`. These variable names can be changed, see configuration below. But in the end, each pod needs to have self pod name and namespace added as environment variables.
+
+#### Gotchas:
+- Label/Annotation path in each pod spec MUST EXIST, which is easily satisfied if there is at least one label/annotation in the pod spec already. This limitation may be removed in future.
+- All Druid Pods belonging to one Druid cluster must be inside same kubernetes namespace.
+- All Druid Pods need permissions to be able to add labels to self-pod, List and Watch other Pods, create and read ConfigMap for leader election. Assuming, "default" service account is used by Druid pods, you might need to add following or something similar Kubernetes Role and Role Binding.
+```YAML
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: druid-cluster
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - configmaps
+  verbs:
+  - '*'
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: druid-cluster
+subjects:
+- kind: ServiceAccount
+  name: default
+roleRef:
+  kind: Role
+  name: druid-cluster
+  apiGroup: rbac.authorization.k8s.io
+```
