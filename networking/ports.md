@@ -1,0 +1,4 @@
+# Ports:
+- In the context of computer networking, a "port" is a logical endpoint for communication in a network. It's used to distinguish different services or processes running on the same device or across a network. Ports allow multiple applications or services to share the same IP address on a single device, with each application or service using a unique port number.
+- For example, when you enter a URL in a web browser (e.g., "http://www.example.com"), your browser sends an HTTP request to the IP address associated with "www.example.com" and typically uses port 80 for HTTP. The web server running at that IP address listens on port 80 to receive and respond to incoming HTTP requests.
+- Ports are a fundamental part of how networked applications and services communicate, allowing multiple services to coexist on the same device and enabling devices on a network to exchange data with the appropriate applications.
